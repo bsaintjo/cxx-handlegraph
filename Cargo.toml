@@ -1,0 +1,12 @@
+[package]
+name = "cxx-handlegraph"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+autocxx = "0.30.0"
+cxx = "1.0.157"
+
+[build-dependencies]
+autocxx-build = "0.30.0"
+cxx-build = "1.0.157"
