@@ -6,7 +6,10 @@ edition = "2024"
 [dependencies]
 autocxx = "0.30.0"
 cxx = "1.0.157"
+handlegraph = "0.7.0-alpha.9"
+ref-cast = "1.0.24"
 
 [build-dependencies]
 autocxx-build = "0.30.0"
 cxx-build = "1.0.157"
+miette = { version = "5", features = ["fancy"] }
