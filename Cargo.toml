@@ -3,6 +3,10 @@ name = "cxx-handlegraph"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["staticlib"]
+name = "cxx_handlegraph"
+
 [dependencies]
 autocxx = "0.30.0"
 cxx = "1.0.157"
