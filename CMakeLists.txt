@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.22)
-project(glue-handlegraph)
+project(
+        GlueHandleGraph
+        VERSION 0.1.0
+        LANGUAGES CXX
+        DESCRIPTION "C++/Rust bridge for HandleGraph"
+)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -30,9 +35,10 @@ add_executable(
         ${GLUE_HANDLE_GRAPH_BRIDGE_CPP}
 )
 
-# Add library (optional)
+
 add_library(
         glue_hash_graph
+        STATIC
         cpp/src/glue_hash_graph.cpp
         cpp/include/rust_hash_graph/glue_hash_graph.hpp
 )
@@ -47,13 +53,17 @@ target_include_directories(
 
 target_include_directories(
     glue_hash_graph
-    PRIVATE
+    PUBLIC
     cpp/include/
+)
+
+target_include_directories(
+    glue_hash_graph
+    PRIVATE
     ${CARGO_TARGET_DIR}/cxxbridge/cxx-handlegraph/src/
     ${CARGO_TARGET_DIR}/cxxbridge
 )
 
-# Link executable to library (if library is added)
 target_link_libraries(glue_main PRIVATE ${GLUE_HANDLE_GRAPH_LIB} handlegraph_shared)
 target_link_libraries(glue_hash_graph PRIVATE ${GLUE_HANDLE_GRAPH_LIB} handlegraph_shared)
 

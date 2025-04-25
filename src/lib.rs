@@ -151,6 +151,7 @@ pub mod ffi {
         fn new_hash_graph() -> Box<RustHashGraph>;
         fn print_occurences(&self);
         fn say_hello(&self);
+        // HandleGraph
         fn has_node(&self, node_id: &RustNodeId) -> bool;
         fn get_node(&self, node_id: &RustNodeId) -> Result<*const RustNode>;
         fn print_path(&self, path_id: &RustPathId);
