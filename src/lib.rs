@@ -12,9 +12,14 @@
 //     generate!("handlegraph::HandleGraph")
 //     generate!("handlegraph::MutableHandleGraph")
 
+use ffi::RustNodeId;
 // }
 use handlegraph::{
-    handle::{Handle, NodeId}, handlegraph::{HandleGraph, IntoHandles, IntoSequences}, hashgraph::{HashGraph, Node}, mutablehandlegraph::AdditiveHandleGraph, pathhandlegraph::{MutableGraphPaths, PathId}
+    handle::{Handle, NodeId},
+    handlegraph::{HandleGraph, IntoHandles, IntoSequences},
+    hashgraph::{HashGraph, Node},
+    mutablehandlegraph::AdditiveHandleGraph,
+    pathhandlegraph::{MutableGraphPaths, PathId},
 };
 use ref_cast::RefCast;
 
@@ -56,13 +61,6 @@ impl RustHashGraph {
         self.0.print_path(&PathId(path_id.inner));
     }
 
-    fn create_path(&mut self, name: &[u8], circular: bool) -> Result<ffi::RustPathId, String> {
-        self.0
-            .create_path(name, circular)
-            .map(|path_id| ffi::RustPathId { inner: path_id.0 })
-            .ok_or("Path creation failed".to_string())
-    }
-
     fn min_node_id(&self) -> ffi::RustNodeId {
         ffi::RustNodeId {
             inner: self.0.min_node_id().0,
@@ -80,13 +78,14 @@ impl RustHashGraph {
     }
 
     fn append_handle(&mut self, sequence: &[u8]) -> ffi::RustHandle {
-        ffi::RustHandle { inner: self.0.append_handle(sequence).0 }
+        ffi::RustHandle {
+            inner: self.0.append_handle(sequence).0,
+        }
     }
 
     fn get_handle(&self, node_id: &ffi::RustNodeId, is_reverse: bool) -> ffi::RustHandle {
         let handle = Handle::pack(node_id.inner, is_reverse);
-        ffi::RustHandle{ inner: handle.0 }
-        // ffi::RustHandle(self.0.get_handle(NodeId(node_id.inner), is_reverse))
+        ffi::RustHandle { inner: handle.0 }
     }
 
     fn get_sequence(&self, handle: &ffi::RustHandle) -> String {
@@ -101,16 +100,36 @@ impl RustHashGraph {
 
     fn flip(&self, handle: &ffi::RustHandle) -> ffi::RustHandle {
         let handle = Handle(handle.inner);
-        ffi::RustHandle { inner: handle.flip().0 }
+        ffi::RustHandle {
+            inner: handle.flip().0,
+        }
     }
     fn get_id(&self, handle: &ffi::RustHandle) -> ffi::RustNodeId {
         let handle = Handle(handle.inner);
-        ffi::RustNodeId { inner: handle.id().0 }
+        ffi::RustNodeId {
+            inner: handle.id().0,
+        }
     }
 
     fn get_length(&self, handle: &ffi::RustHandle) -> usize {
         let handle = Handle(handle.inner);
         self.0.node_len(handle)
+    }
+
+    fn create_handle(&mut self, sequence: &[u8], node_id: RustNodeId) -> ffi::RustHandle {
+        let handle = self.0.create_handle(sequence, node_id);
+        ffi::RustHandle { inner: handle.0 }
+    }
+
+    fn create_path(&mut self, name: &[u8], circular: bool) -> Result<ffi::RustPathId, String> {
+        self.0
+            .create_path(name, circular)
+            .map(|path_id| ffi::RustPathId { inner: path_id.0 })
+            .ok_or("Path creation failed".to_string())
+    }
+
+    fn destroy_path(&mut self, path_id: &ffi::RustPathId) -> bool {
+        self.0.destroy_path(&PathId(path_id.inner))
     }
 }
 
@@ -118,7 +137,7 @@ fn new_hash_graph() -> Box<RustHashGraph> {
     Box::new(RustHashGraph(HashGraph::new()))
 }
 
-#[cxx::bridge(namespace="hgrs")]
+#[cxx::bridge(namespace = "hgrs")]
 pub mod ffi {
     struct RustNodeId {
         inner: u64,
@@ -132,13 +151,13 @@ pub mod ffi {
         inner: u64,
     }
 
-    #[namespace="handlegraph"]
+    #[namespace = "handlegraph"]
     extern "C++" {
         include!("handlegraph/types.hpp");
         // include!("handlegraph/util.hpp");
-    //     include!("handlegraph/handle_graph.hpp");
-    //     include!("handlegraph/mutable_handle_graph.hpp");
-    //     include!("handlegraph/path_handle_graph.hpp");
+        //     include!("handlegraph/handle_graph.hpp");
+        //     include!("handlegraph/mutable_handle_graph.hpp");
+        //     include!("handlegraph/path_handle_graph.hpp");
 
         type handle_t;
     }
@@ -155,7 +174,6 @@ pub mod ffi {
         fn has_node(&self, node_id: &RustNodeId) -> bool;
         fn get_node(&self, node_id: &RustNodeId) -> Result<*const RustNode>;
         fn print_path(&self, path_id: &RustPathId);
-        fn create_path(&mut self, name: &[u8], circular: bool) -> Result<RustPathId>;
         fn min_node_id(&self) -> RustNodeId;
         fn max_node_id(&self) -> RustNodeId;
         fn get_node_count(&self) -> usize;
@@ -165,6 +183,11 @@ pub mod ffi {
         fn flip(&self, handle: &RustHandle) -> RustHandle;
         fn get_id(&self, handle: &RustHandle) -> RustNodeId;
         fn get_length(&self, handle: &RustHandle) -> usize;
+
+        // MutableHandleGraph
+        fn create_handle(&mut self, sequence: &[u8], node_id: RustNodeId) -> RustHandle;
+        fn create_path(&mut self, name: &[u8], circular: bool) -> Result<RustPathId>;
+        fn destroy_path(&mut self, path_id: &RustPathId) -> bool;
     }
 }
 
