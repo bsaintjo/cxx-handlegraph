@@ -17,9 +17,10 @@ fn main() -> miette::Result<()> {
     // println!("cargo:rerun-if-changed=src/lib.rs");
     // Ok(())
     cxx_build::bridge("src/lib.rs")
-    //     .include("libhandlegraph/src/include")
-    //     .file("libhandlegraph/src/types.cpp")
+        .include("libhandlegraph/src/include")
+        .file("libhandlegraph/src/types.cpp")
         .std("c++14")
+        // .ranlib("/usr/bin/ranlib")
         .compile("cxx_handlegraph");
     println!("cargo:rerun-if-changed=src/lib.rs");
     // println!("cargo:rerun-if-changed=libhandlegraph/src/types.cpp");
