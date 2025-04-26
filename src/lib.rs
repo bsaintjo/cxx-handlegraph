@@ -117,7 +117,7 @@ impl RustHashGraph {
     }
 
     fn create_handle(&mut self, sequence: &[u8], node_id: RustNodeId) -> ffi::RustHandle {
-        let handle = self.0.create_handle(sequence, node_id);
+        let handle = self.0.create_handle(sequence, node_id.inner);
         ffi::RustHandle { inner: handle.0 }
     }
 
@@ -129,7 +129,7 @@ impl RustHashGraph {
     }
 
     fn destroy_path(&mut self, path_id: &ffi::RustPathId) -> bool {
-        self.0.destroy_path(&PathId(path_id.inner))
+        self.0.destroy_path(PathId(path_id.inner))
     }
 }
 
