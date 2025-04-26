@@ -21,7 +21,7 @@ def rust_cxx_bridge(
             "generated.cc": ["generated.cc"],
             "generated.h": ["generated.h"],
         },
-        cmd = "$(exe //:codegen) ${SRCS} -o ${OUT}/generated.h -o ${OUT}/generated.cc",
+        cmd = "cxxbridge ${SRCS} -o ${OUT}/generated.h -o ${OUT}/generated.cc",
         type = "cxxbridge",
     )
 
@@ -35,4 +35,5 @@ def rust_cxx_bridge(
     native.cxx_library(
         name = "%s/include" % name,
         exported_headers = [":%s/header" % name],
+        include_directories = [":%s/header" % name],
     )
