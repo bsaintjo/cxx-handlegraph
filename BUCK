@@ -7,6 +7,12 @@ genrule(
     cmd = "echo BUILT BY BUCK2> $OUT",
 )
 
+genrule(
+    name = "cxx-build",
+    out = "target",
+    cmd = "cargo build --release --target-dir $OUT && ls $OUT",
+)
+
 rust_binary(
     name = "test_bin",
     srcs = [
