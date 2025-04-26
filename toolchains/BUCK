@@ -32,7 +32,7 @@ system_python_bootstrap_toolchain(
 
 system_rust_toolchain(
     name = "rust",
-    default_edition = None,
+    default_edition = "2021",
     doctests = True,
     visibility = ["PUBLIC"],
 )
