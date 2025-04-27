@@ -31,8 +31,12 @@ rust_binary(
 
 rust_cxx_bridge(
     name = "bridge",
-    srcs = [
-        "src/lib.rs",
+    src = "src/lib.rs",
+    include_directories = [
+        "libhandlegraph/src/include",
+    ],
+    deps = [
+        ":libhandlegraph",
     ],
 )
 
@@ -40,50 +44,56 @@ rust_cxx_bridge(
 cxx_library(
     name = "rust_handle_graph",
     srcs = [
-        ":cxx_build[src-file]",
         "cpp/src/glue_hash_graph.cpp",
         "cpp/src/utils.cpp",
+        ":bridge/source"
     ],
     include_directories = [
-        ":cxx_build[src-dir]",
         "cpp/include",
         "cpp/include/rust_hash_graph",
         "libhandlegraph/src/include",
-    ],
-    headers = [
-        ":cxx_build[header]",
     ],
     exported_headers = [
         "cpp/include/rust_hash_graph/glue_hash_graph.hpp",
         "cpp/include/rust_hash_graph/utils.hpp",
     ],
-    header_namespace = "rust_handle_graph",
+    header_namespace = "rust_hash_graph",
     visibility = ["PUBLIC"],
     deps = [
-        ":cxx_build",
         ":libhandlegraph",
+        ":bridge/lib"
     ],
 )
 
 cxx_binary(
     name = "glue_main",
-    srcs = ["cpp/src/test.cpp"],
+    srcs = ["cpp/src/main.cpp"],
+    include_directories = [
+        "cpp/include",
+        "cpp/include/rust_hash_graph",
+        "libhandlegraph/src/include",
+    ],
     link_style = "static",
     deps = [
         ":libhandlegraph",
         ":rust_handle_graph",
+        ":bridge/lib"
     ],
 )
 
 cxx_library(
     name = "libhandlegraph",
     srcs = glob(["libhandlegraph/src/*.cpp"]),
-    exported_headers = glob(["libhandlegraph/src/include/handlegraph/*.hpp"]) + glob(["libhandlegraph/src/include/handlegraph/algorithms/*.hpp"]),
+    # exported_headers = glob(["libhandlegraph/src/include/handlegraph/*.hpp"]) + glob(["libhandlegraph/src/include/handlegraph/algorithms/*.hpp"]),
+    exported_headers = {
+        "types.hpp": "libhandlegraph/src/include/handlegraph/types.hpp",
+        "handle_graph.hpp": "libhandlegraph/src/include/handlegraph/handle_graph.hpp",
+    },
     include_directories = [
         "libhandlegraph/src/include",
     #     "libhandlegraph/src/include/handlegraph",
     #     "libhandlegraph/src/include/handlegraph/algorithms",
     ],
-    # header_namespace = "handlegraph",
+    header_namespace = "handlegraph",
     visibility = ["PUBLIC"],
 )
