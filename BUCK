@@ -8,9 +8,13 @@ genrule(
 )
 
 genrule(
-    name = "cxx-build",
-    out = "target",
-    cmd = "cargo build --release --target-dir $OUT && ls $OUT",
+    name = "cxx_build",
+    cmd = "cargo build --release --target-dir $OUT",
+    outs = {
+        "src-file": ["cxxbridge/cxx-handlegraph/src/lib.rs.cc"],
+        "src-dir": ["cxxbridge/cxx-handlegraph/src"],
+        "header": ["cxxbridge/cxx-handlegraph/src/lib.rs.h"],
+    }
 )
 
 rust_binary(
@@ -21,8 +25,14 @@ rust_binary(
     edition = "2021",
     visibility = ["PUBLIC"],
     deps = [
-        ":bridge",
         ":libhandlegraph",
+    ],
+)
+
+rust_cxx_bridge(
+    name = "bridge",
+    srcs = [
+        "src/lib.rs",
     ],
 )
 
@@ -30,22 +40,27 @@ rust_binary(
 cxx_library(
     name = "rust_handle_graph",
     srcs = [
+        ":cxx_build[src-file]",
         "cpp/src/glue_hash_graph.cpp",
         "cpp/src/utils.cpp",
     ],
     include_directories = [
+        ":cxx_build[src-dir]",
         "cpp/include",
         "cpp/include/rust_hash_graph",
+        "libhandlegraph/src/include",
+    ],
+    headers = [
+        ":cxx_build[header]",
     ],
     exported_headers = [
         "cpp/include/rust_hash_graph/glue_hash_graph.hpp",
-        "cpp/include/rust_hash_graph/utils.hpp"
+        "cpp/include/rust_hash_graph/utils.hpp",
     ],
     header_namespace = "rust_handle_graph",
     visibility = ["PUBLIC"],
     deps = [
-        ":bridge/include",
-        ":bridge/header",
+        ":cxx_build",
         ":libhandlegraph",
     ],
 )
@@ -57,8 +72,6 @@ cxx_binary(
     deps = [
         ":libhandlegraph",
         ":rust_handle_graph",
-        ":bridge/include",
-        ":bridge/header",
     ],
 )
 

@@ -1,7 +1,9 @@
 def rust_cxx_bridge(
         name: str,
         src: str,
-        deps: list[str] = []):
+        deps: list[str] = []
+        include_directories: list[str] = [],
+):
     native.export_file(
         name = "%s/header" % name,
         src = ":%s/generated[generated.h]" % name,
