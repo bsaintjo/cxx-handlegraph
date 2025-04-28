@@ -1,3 +1,4 @@
+// #include "cxxbridge/cxx-handlegraph/src/lib.rs.h"
 #include "lib.rs.h"
 #include "handlegraph/handle_graph.hpp"
 #include "handlegraph/util.hpp"
