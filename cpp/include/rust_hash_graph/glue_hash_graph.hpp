@@ -21,24 +21,24 @@ class GlueHashGraph : public HandleGraph
 
     // Implementation of HandleGraph
    public:
-    bool has_node(nid_t node_id) const;
-    handle_t get_handle(const nid_t& node_id, bool is_reverse = false) const;
-    nid_t get_id(const handle_t& handle) const;
-    bool get_is_reverse(const handle_t& handle) const;
-    handle_t flip(const handle_t& handle) const;
-    size_t get_length(const handle_t& handle) const;
-    std::string get_sequence(const handle_t& handle) const;
-    size_t get_node_count() const;
-    nid_t min_node_id() const;
-    nid_t max_node_id() const;
+    bool has_node(nid_t node_id) const override;
+    handle_t get_handle(const nid_t& node_id, bool is_reverse = false) const override;
+    nid_t get_id(const handle_t& handle) const override;
+    bool get_is_reverse(const handle_t& handle) const override;
+    handle_t flip(const handle_t& handle) const override;
+    size_t get_length(const handle_t& handle) const override;
+    std::string get_sequence(const handle_t& handle) const override;
+    size_t get_node_count() const override;
+    nid_t min_node_id() const override;
+    nid_t max_node_id() const override;
 
    protected:
     bool follow_edges_impl(
         const handle_t& handle, bool go_left,
-        const std::function<bool(const handle_t&)>& iteratee) const;
+        const std::function<bool(const handle_t&)>& iteratee) const override;
     bool for_each_handle_impl(
         const std::function<bool(const handle_t&)>& iteratee,
-        bool parallel = false) const;
+        bool parallel = false) const override;
 };
 }  // namespace glue_hash_graph
 
